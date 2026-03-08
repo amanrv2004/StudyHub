@@ -134,7 +134,12 @@ app.get('/api/attendance/student/:studentId', async (req, res) => {
 
 app.get('/api/attendance', async (req, res) => {
   try {
-    const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+    const today = new Date().toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata'
+    }).toUpperCase();
     const logs = await Attendance.find({ date: today }).sort({ createdAt: -1 });
     res.json(logs);
   } catch (err) {
@@ -150,7 +155,12 @@ app.post('/api/attendance/sync', async (req, res) => {
     if (!student) return res.status(404).json({ message: 'Student not found' });
 
     const now = new Date();
-    const todayStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+    const todayStr = now.toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata'
+    }).toUpperCase();
     const typeLabel = type === 'In' ? 'Check-In' : 'Check-Out';
     
     // Use findOneAndUpdate with upsert for atomic "get or create"
@@ -167,15 +177,28 @@ app.post('/api/attendance/sync', async (req, res) => {
           studentId,
           type: typeLabel,
           date: todayStr,
-          time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+          time: now.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true,
+            timeZone: 'Asia/Kolkata'
+          })
         }
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
-    // Calculate new attendance percentage (Current Month Only)
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const daysElapsed = now.getDate();
+    // Calculate new attendance percentage (Current Month Only) using IST
+    const istNowStr = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+    const istNow = new Date(istNowStr);
+    
+    // Create start of month in IST correctly
+    const istYear = istNow.getFullYear();
+    const istMonth = istNow.getMonth();
+    // MongoDB uses UTC, so we need the UTC equivalent of IST midnight on 1st of month
+    // IST is UTC+5:30, so 00:00:00 IST is 18:30:00 UTC of previous day
+    const startOfMonth = new Date(`${istYear}-${String(istMonth + 1).padStart(2, '0')}-01T00:00:00+05:30`);
+    const daysElapsed = istNow.getDate();
     
     const distinctDaysThisMonth = await Attendance.distinct('date', { 
       studentId: student._id,
@@ -296,14 +319,14 @@ app.get('/api/export', async (req, res) => {
       Title: e.title,
       Category: e.category,
       Amount: e.amount,
-      Date: new Date(e.date).toLocaleDateString()
+      Date: new Date(e.date).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' })
     }));
 
     const paymentData = payments.map(p => ({
       Student: p.studentName,
       Amount: p.amount,
       Method: p.method,
-      Date: new Date(p.paymentDate).toLocaleDateString(),
+      Date: new Date(p.paymentDate).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' }),
       Month: p.month
     }));
 
@@ -344,16 +367,16 @@ app.get('/api/export-pdf', async (req, res) => {
     doc.fontSize(25).text('STUDY HUB MASTER REPORT', { align: 'center' });
     doc.fontSize(12).text('Complete Library Management & Financial Record', { align: 'center' });
     doc.moveDown();
-    doc.fontSize(10).text(`Generated On: ${new Date().toLocaleString()}`, { align: 'right' });
+    doc.fontSize(10).text(`Generated On: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`, { align: 'right' });
     doc.moveDown(2);
 
     // Summary Section
     const totalIncome = payments.reduce((acc, p) => acc + (p.amount || 0), 0);
     const totalExp = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
     doc.fontSize(16).text('Financial Summary', { underline: true });
-    doc.fontSize(12).text(`Total Revenue (Fees): Rs.${totalIncome.toLocaleString()}`);
-    doc.fontSize(12).text(`Total Investments (Expenses): Rs.${totalExp.toLocaleString()}`);
-    doc.fontSize(12).text(`Net Balance: Rs.${(totalIncome - totalExp).toLocaleString()}`);
+    doc.fontSize(12).text(`Total Revenue (Fees): Rs.${totalIncome.toLocaleString('en-IN')}`);
+    doc.fontSize(12).text(`Total Investments (Expenses): Rs.${totalExp.toLocaleString('en-IN')}`);
+    doc.fontSize(12).text(`Net Balance: Rs.${(totalIncome - totalExp).toLocaleString('en-IN')}`);
     doc.moveDown(2);
     
     // 1. Students Section
@@ -369,7 +392,7 @@ app.get('/api/export-pdf', async (req, res) => {
     doc.fontSize(16).text('Complete Fee Collection History', { underline: true });
     doc.moveDown();
     payments.forEach(p => {
-        const date = p.paymentDate ? new Date(p.paymentDate).toLocaleDateString() : 'N/A';
+        const date = p.paymentDate ? new Date(p.paymentDate).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' }) : 'N/A';
         doc.fontSize(10).text(`${date} - ${p.studentName} - Rs.${p.amount} (${p.month}) - ${p.method}`);
     });
     
@@ -381,7 +404,7 @@ app.get('/api/export-pdf', async (req, res) => {
     doc.fontSize(16).text('Library Expense Log', { underline: true });
     doc.moveDown();
     expenses.forEach(e => {
-        const date = e.date ? new Date(e.date).toLocaleDateString() : 'N/A';
+        const date = e.date ? new Date(e.date).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' }) : 'N/A';
         doc.fontSize(10).text(`${date} - ${e.title} - [${e.category}] - Rs.${e.amount}`);
     });
 
