@@ -1028,25 +1028,24 @@ function SettingsView({ admin, onUpdate }) {
 function StudentProfileView({ student, onClose, onEdit }) {
     if (!student) return null;
     return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 lg:p-10 bg-[#020617]/95 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-500">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="fixed inset-0 z-[150] flex items-start justify-center p-0 lg:p-10 bg-[#020617]/95 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-500 overflow-y-auto custom-scrollbar">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none fixed">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full"></div>
             </div>
 
-            <Card className="w-full max-w-5xl border-white/5 bg-slate-900/40 relative overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
-                <div className="absolute top-8 right-8 flex items-center gap-3 z-50">
-                    <button onClick={() => { onEdit(student); onClose(); }} className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl text-emerald-400 text-[10px] font-black uppercase tracking-widest transition-all group">
-                        <FileEdit size={14} className="group-hover:scale-110 transition-transform" /> Modify Profile
+            <Card noPadding className="w-full max-w-5xl border-white/5 bg-slate-900/40 relative overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)] my-auto lg:my-0 rounded-none lg:rounded-[2rem]">
+                <div className="absolute top-4 right-4 lg:top-8 lg:right-8 flex items-center gap-2 lg:gap-3 z-50">
+                    <button onClick={() => { onEdit(student); onClose(); }} className="flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl text-emerald-400 text-[8px] lg:text-[10px] font-black uppercase tracking-widest transition-all group">
+                        <FileEdit size={12} lg:size={14} className="group-hover:scale-110 transition-transform" /> Modify
                     </button>
-                    <button onClick={onClose} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-slate-400 hover:text-white group border border-white/5">
-                        <X size={24} className="group-hover:rotate-90 transition-transform duration-500" />
+                    <button onClick={onClose} className="p-2 lg:p-3 bg-white/5 hover:bg-white/10 rounded-xl lg:rounded-2xl transition-all text-slate-400 hover:text-white group border border-white/5">
+                        <X size={20} lg:size={24} className="group-hover:rotate-90 transition-transform duration-500" />
                     </button>
                 </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-                    <div className="lg:col-span-4 space-y-8 lg:border-r lg:border-white/5 lg:pr-10">
-                        <div className="text-center">
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-0 p-6 lg:p-12 pt-20 lg:pt-12">
+                    <div className="lg:col-span-4 space-y-8 lg:border-r lg:border-white/5 lg:pr-12">                        <div className="text-center">
                             <div className="relative inline-block mb-8">
                                 <div className="w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-[3rem] flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/20 transform rotate-3 hover:rotate-0 transition-transform duration-700">
                                     <span className="text-5xl lg:text-6xl font-black text-white drop-shadow-2xl">{student.fullName?.charAt(0)}</span>
@@ -1077,7 +1076,7 @@ function StudentProfileView({ student, onClose, onEdit }) {
                         </div>
                     </div>
 
-                    <div className="lg:col-span-8">
+                    <div className="lg:col-span-8 pt-10 border-t border-white/5 lg:border-t-0 lg:pt-0">
                         <div className="mb-10">
                             <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] mb-2">Student Dossier</h4>
                             <h2 className="text-2xl lg:text-3xl font-black text-white uppercase tracking-tighter">Detailed Credentials</h2>
