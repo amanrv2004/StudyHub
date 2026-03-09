@@ -21,7 +21,6 @@ ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement, 
   BarElement, Title, Tooltip, Legend, ArcElement
 );
-
 // --- API CONFIGURATION ---
 let BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
 BASE_URL = BASE_URL.replace(/\/$/, '');
