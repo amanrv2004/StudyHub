@@ -31,6 +31,10 @@ router.post('/student/login', async (req, res) => {
     const student = await Student.findOne({ studyId: studyId.toUpperCase() });
     if (!student) return res.status(404).json({ message: 'Student not found' });
 
+    if (student.status !== 'Active') {
+      return res.status(403).json({ message: 'Your account is inactive. Please contact the administrator.' });
+    }
+
     const isMatch = await bcrypt.compare(password, student.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
