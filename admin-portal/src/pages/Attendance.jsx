@@ -11,6 +11,13 @@ function Attendance({ attendance }) {
 
     const filteredAttendance = attendance.filter(log => {
         const matchesName = log.studentName.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        if (typeFilter === 'Currently In') {
+            const hasCheckIn = attendance.some(a => a.studentId === log.studentId && a.type === 'Check-In');
+            const hasCheckOut = attendance.some(a => a.studentId === log.studentId && a.type === 'Check-Out');
+            return matchesName && log.type === 'Check-In' && hasCheckIn && !hasCheckOut;
+        }
+
         const matchesType = typeFilter === 'All' || log.type === typeFilter;
         return matchesName && matchesType;
     });
@@ -19,6 +26,10 @@ function Attendance({ attendance }) {
 
     const checkIns = attendance.filter(a => a.type === 'Check-In').length;
     const checkOuts = attendance.filter(a => a.type === 'Check-Out').length;
+    const currentlyIn = attendance.filter(a => {
+        const hasCheckOut = attendance.some(out => out.studentId === a.studentId && out.type === 'Check-Out');
+        return a.type === 'Check-In' && !hasCheckOut;
+    }).length;
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
@@ -42,6 +53,13 @@ function Attendance({ attendance }) {
                         <p className="text-[8px] font-black text-rose-500 uppercase tracking-widest mb-0.5">Total Check-outs</p>
                         <p className="text-sm font-black text-white">{checkOuts}</p>
                     </div>
+                    <button 
+                        onClick={() => { setTypeFilter('Currently In'); setPage(1); }}
+                        className={`px-4 py-2 rounded-xl border transition-all ${typeFilter === 'Currently In' ? 'bg-blue-500/10 border-blue-500/40 text-blue-400' : 'bg-slate-900 border-white/5 text-slate-500'}`}
+                    >
+                        <p className="text-[8px] font-black uppercase tracking-widest mb-0.5">Active Now</p>
+                        <p className="text-sm font-black">{currentlyIn}</p>
+                    </button>
                 </div>
             </div>
 
@@ -59,7 +77,7 @@ function Attendance({ attendance }) {
                     </div>
                     <div className="flex items-center gap-3 w-full md:w-auto">
                         <div className="flex items-center gap-2 bg-slate-900/50 border border-white/10 rounded-xl p-1 shrink-0">
-                            {['All', 'Check-In', 'Check-Out'].map(t => (
+                            {['All', 'Check-In', 'Check-Out', 'Currently In'].map(t => (
                                 <button 
                                     key={t}
                                     onClick={() => { setTypeFilter(t); setPage(1); }}
