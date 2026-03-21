@@ -8,6 +8,9 @@ const helmet = require('helmet');
 const app = express();
 const PORT = process.env.PORT || 5005;
 
+// Disable Mongoose buffering to get immediate errors instead of timeouts
+mongoose.set('bufferCommands', false);
+
 // Security Middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
@@ -38,6 +41,22 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Database connection middleware for serverless/cold starts
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      console.log('🔄 Reconnecting to MongoDB...');
+      await mongoose.connect(process.env.MONGODB_URI);
+      next();
+    } catch (err) {
+      console.error('❌ Database connection middleware error:', err);
+      return res.status(500).json({ message: 'Database connection failed' });
+    }
+  } else {
+    next();
+  }
+});
 
 // Health Check
 app.get('/api/health', (req, res) => {
@@ -439,21 +458,38 @@ app.get('/api/export-pdf', async (req, res) => {
   }
 });
 
-const mongoURI = process.env.MONGODB_URI; 
+// Database Connection & Server Startup
+const startServer = async () => {
+  try {
+    const mongoURI = process.env.MONGODB_URI;
 
-if (mongoURI) {
-  mongoose.connect(mongoURI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch((error) => console.error('❌ MongoDB connection error:', error));
-} else {
-  console.warn('⚠️ MONGODB_URI is not defined in environment variables');
-}
+    if (!mongoURI) {
+      console.error('❌ MONGODB_URI is not defined in environment variables');
+      process.exit(1);
+    }
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
-}
+    // Connect to MongoDB with improved options
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of default 30s
+    });
+
+    console.log('✅ Connected to MongoDB');
+
+    // Start server only after DB connection
+    if (require.main === module) {
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+      });
+    }
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error);
+    // On serverless platforms like Vercel, we might not want to exit
+    if (require.main === module) {
+      process.exit(1);
+    }
+  }
+};
+
+startServer();
 
 module.exports = app;
-
