@@ -44,18 +44,18 @@ function Attendance({ attendance }) {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 w-full sm:w-auto">
+                    <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex-1 sm:flex-none">
                         <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest mb-0.5">Total Check-ins</p>
                         <p className="text-sm font-black text-white">{checkIns}</p>
                     </div>
-                    <div className="px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                    <div className="px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-xl flex-1 sm:flex-none">
                         <p className="text-[8px] font-black text-rose-500 uppercase tracking-widest mb-0.5">Total Check-outs</p>
                         <p className="text-sm font-black text-white">{checkOuts}</p>
                     </div>
                     <button 
                         onClick={() => { setTypeFilter('Currently In'); setPage(1); }}
-                        className={`px-4 py-2 rounded-xl border transition-all ${typeFilter === 'Currently In' ? 'bg-blue-500/10 border-blue-500/40 text-blue-400' : 'bg-slate-900 border-white/5 text-slate-500'}`}
+                        className={`col-span-2 sm:col-auto px-4 py-2 rounded-xl border transition-all text-left sm:text-center ${typeFilter === 'Currently In' ? 'bg-blue-500/10 border-blue-500/40 text-blue-400 shadow-lg shadow-blue-500/5' : 'bg-slate-900 border-white/5 text-slate-500'}`}
                     >
                         <p className="text-[8px] font-black uppercase tracking-widest mb-0.5">Active Now</p>
                         <p className="text-sm font-black">{currentlyIn}</p>
