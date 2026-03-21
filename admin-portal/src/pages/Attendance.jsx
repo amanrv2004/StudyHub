@@ -75,13 +75,13 @@ function Attendance({ attendance }) {
                             onChange={(e) => { setSearchName(e.target.value); setPage(1); }}
                         />
                     </div>
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                        <div className="flex items-center gap-2 bg-slate-900/50 border border-white/10 rounded-xl p-1 shrink-0">
+                    <div className="flex items-center gap-3 w-full md:w-auto overflow-hidden">
+                        <div className="flex items-center gap-2 bg-slate-900/50 border border-white/10 rounded-xl p-1 overflow-x-auto no-scrollbar shrink-0 max-w-full">
                             {['All', 'Check-In', 'Check-Out', 'Currently In'].map(t => (
                                 <button 
                                     key={t}
                                     onClick={() => { setTypeFilter(t); setPage(1); }}
-                                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${typeFilter === t ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-500 hover:text-white'}`}
+                                    className={`px-3 lg:px-4 py-2 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${typeFilter === t ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-500 hover:text-white'}`}
                                 >
                                     {t === 'All' ? 'Full View' : t}
                                 </button>
