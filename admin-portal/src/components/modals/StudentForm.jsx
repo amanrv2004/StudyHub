@@ -46,7 +46,7 @@ const StudentForm = ({ initialData, onClose, onRefresh }) => {
       } else {
         await axios.post(`${API_URL}/students`, { ...payload, dueAmount: payload.monthlyFee });
         
-        const message = `*STUDY HUB ENROLLMENT SUCCESS*\n\nDear ${payload.fullName},\n\nYour enrollment is complete. Use the credentials below to access your portal:\n\n*Study ID:* ${payload.studyId}\n*Password:* ${payload.password}\n\n*Portal URL:* https://library-j9p7.vercel.app\n\nWelcome to Study Hub!`;
+        const message = `*STUDY HUB ENROLLMENT SUCCESS*\n\nDear ${payload.fullName},\n\nYour enrollment is complete. Use the credentials below to access your portal:\n\n*Study ID:* ${payload.studyId}\n*Password:* ${payload.password}\n\n*Portal URL:* https://studentsstudyhub.vercel.app\n\nWelcome to Study Hub!`;
         
         let phone = payload.phone.replace(/\D/g, '');
         if (phone.length === 10) phone = `91${phone}`;
