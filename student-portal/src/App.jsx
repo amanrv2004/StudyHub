@@ -88,6 +88,10 @@ export default function StudentApp() {
   const refreshStudentData = async () => {
     try {
       const res = await axios.get(`${API_URL}/students/${student._id}`);
+      if (res.data.status !== 'Active') {
+        handleLogout();
+        return;
+      }
       setStudent(res.data);
       localStorage.setItem('student_user', JSON.stringify(res.data));
     } catch (err) { console.error('Student refresh failed', err); }
