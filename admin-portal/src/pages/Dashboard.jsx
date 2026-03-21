@@ -268,7 +268,7 @@ function Dashboard({ stats, attendance, analytics }) {
                         <p className="text-[8px] lg:text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">{viewType === 'total' ? 'Overall' : viewType} Net Profit</p>
                         <p className={`text-sm lg:text-lg font-black font-mono ${viewNetProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>₹{viewNetProfit.toLocaleString()}</p>
                     </div>
-                    <div className="ml-auto hidden sm:flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto sm:ml-auto justify-end sm:justify-start">
                         <div className={`px-4 py-2 rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest ${viewNetProfit >= 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
                             {viewNetProfit >= 0 ? 'Profitable' : 'Loss-making'}
                         </div>
